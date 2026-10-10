@@ -34,7 +34,8 @@ function years(n: number): string {
 /** Formats "2026-10-10" as "October 10, 2026" without timezone drift. */
 export function formatDate(iso: string): string {
   const [y, m, d] = iso.split("-").map(Number);
-  if (!y || !m || !d) return "";
+  // A year below 1000 is a partially typed date (e.g. "0026"), not a real effective date.
+  if (!y || y < 1000 || !m || !d) return "";
   return new Date(y, m - 1, d).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",

@@ -1,12 +1,13 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import type { NdaData, Party } from "@/lib/nda/types";
 
 type Props = {
   data: NdaData;
   onChange: (patch: Partial<NdaData>) => void;
+  onPartyChange: (index: 0 | 1, patch: Partial<Party>) => void;
 };
 
 /** Shared input styling, without a width so callers can size it. */
@@ -50,19 +51,38 @@ function todayIso(): string {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
 }
 
-/** Whole years from 1 to 99; anything else falls back to 1. */
-function toYears(value: string): number {
+/** Whole years clamped to 1–99, or null while the input is empty or not a number. */
+function parseYears(value: string): number | null {
   const n = Math.trunc(Number(value));
-  return n >= 1 && n <= 99 ? n : 1;
+  return value.trim() === "" || !Number.isFinite(n) ? null : Math.min(99, Math.max(1, n));
 }
 
-export function NdaForm({ data, onChange }: Props) {
-  const updateParty = (index: 0 | 1, patch: Partial<Party>) => {
-    const parties: [Party, Party] = [...data.parties];
-    parties[index] = { ...parties[index], ...patch };
-    onChange({ parties });
-  };
+/**
+ * Number input for a term in years. Keeps the raw text while the user is typing, so the
+ * field can be cleared and retyped, and shows the committed value again on blur.
+ */
+function YearsInput(props: { label: string; value: number; disabled: boolean; onChange: (years: number) => void }) {
+  const [draft, setDraft] = useState<string | null>(null);
+  return (
+    <input
+      type="number"
+      min={1}
+      max={99}
+      aria-label={props.label}
+      className={`${inputBase} w-20`}
+      value={draft ?? props.value}
+      disabled={props.disabled}
+      onChange={(e) => {
+        setDraft(e.target.value);
+        const years = parseYears(e.target.value);
+        if (years !== null) props.onChange(years);
+      }}
+      onBlur={() => setDraft(null)}
+    />
+  );
+}
 
+export function NdaForm({ data, onChange, onPartyChange: updateParty }: Props) {
   return (
     <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
       <Section title="Agreement terms">
@@ -102,15 +122,11 @@ export function NdaForm({ data, onChange }: Props) {
               onChange={() => onChange({ mndaTerm: "expires" })}
             />
             Expires
-            <input
-              type="number"
-              min={1}
-              max={99}
-              aria-label="MNDA term in years"
-              className={`${inputBase} w-20`}
+            <YearsInput
+              label="MNDA term in years"
               value={data.mndaTermYears}
               disabled={data.mndaTerm !== "expires"}
-              onChange={(e) => onChange({ mndaTermYears: toYears(e.target.value) })}
+              onChange={(years) => onChange({ mndaTermYears: years })}
             />
             year(s) from the effective date
           </label>
@@ -133,15 +149,11 @@ export function NdaForm({ data, onChange }: Props) {
               checked={data.confidentialityTerm === "years"}
               onChange={() => onChange({ confidentialityTerm: "years" })}
             />
-            <input
-              type="number"
-              min={1}
-              max={99}
-              aria-label="Term of confidentiality in years"
-              className={`${inputBase} w-20`}
+            <YearsInput
+              label="Term of confidentiality in years"
               value={data.confidentialityYears}
               disabled={data.confidentialityTerm !== "years"}
-              onChange={(e) => onChange({ confidentialityYears: toYears(e.target.value) })}
+              onChange={(years) => onChange({ confidentialityYears: years })}
             />
             <span className="min-w-48 flex-1">
               year(s) from the effective date (trade secrets stay protected while they remain trade secrets)
@@ -170,7 +182,7 @@ export function NdaForm({ data, onChange }: Props) {
           <Field label="Jurisdiction" hint="Courts that hear disputes">
             <input
               className={input}
-              placeholder="Courts located in New Castle, DE"
+              placeholder="New Castle County, Delaware"
               value={data.jurisdiction}
               onChange={(e) => onChange({ jurisdiction: e.target.value })}
             />

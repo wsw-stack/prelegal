@@ -61,6 +61,10 @@ describe("formatDate", () => {
     expect(formatDate("")).toBe("");
     expect(formatDate("not-a-date")).toBe("");
   });
+
+  it("treats a partially typed year as invalid", () => {
+    expect(formatDate("0026-10-10")).toBe("");
+  });
 });
 
 describe("pdfFilename", () => {

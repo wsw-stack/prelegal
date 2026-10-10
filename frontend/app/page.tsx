@@ -1,7 +1,6 @@
 import { NdaBuilder } from "@/components/NdaBuilder";
-import { loadStandardTerms } from "@/lib/nda/loadStandardTerms";
+import { standardTerms } from "@/lib/nda/template";
 
-export default async function Home() {
-  const clauses = await loadStandardTerms();
-  return <NdaBuilder clauses={clauses} />;
+export default function Home() {
+  return <NdaBuilder clauses={standardTerms} />;
 }

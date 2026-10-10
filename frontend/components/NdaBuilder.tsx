@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import { buildCoverPage, pdfFilename } from "@/lib/nda/coverPage";
 import type { Clause } from "@/lib/nda/standardTerms";
-import { defaultNdaData, type NdaData } from "@/lib/nda/types";
+import { defaultNdaData, type NdaData, type Party } from "@/lib/nda/types";
 
 import { NdaForm } from "./NdaForm";
 import { NdaPreview } from "./NdaPreview";
@@ -14,6 +14,13 @@ export function NdaBuilder({ clauses }: { clauses: Clause[] }) {
   const [data, setData] = useState<NdaData>(defaultNdaData);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const updateParty = (index: 0 | 1, patch: Partial<Party>) =>
+    setData((prev) => {
+      const parties: [Party, Party] = [...prev.parties];
+      parties[index] = { ...parties[index], ...patch };
+      return { ...prev, parties };
+    });
 
   const cover = useMemo(() => buildCoverPage(data), [data]);
   const missingCount = useMemo(
@@ -32,8 +39,12 @@ export function NdaBuilder({ clauses }: { clauses: Clause[] }) {
       const link = document.createElement("a");
       link.href = url;
       link.download = pdfFilename(data);
+      // Some browsers only download from links in the document, and start the
+      // download asynchronously, so keep the URL alive for a while.
+      document.body.append(link);
       link.click();
-      setTimeout(() => URL.revokeObjectURL(url), 0);
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch (e) {
       console.error(e);
       setError("Could not generate the PDF. Please try again.");
@@ -51,7 +62,11 @@ export function NdaBuilder({ clauses }: { clauses: Clause[] }) {
             Fill in the details below. The agreement on the right updates as you type, and you can download it as a PDF.
           </p>
         </header>
-        <NdaForm data={data} onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))} />
+        <NdaForm
+          data={data}
+          onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
+          onPartyChange={updateParty}
+        />
       </div>
 
       <div className="space-y-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto">
