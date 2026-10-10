@@ -1,0 +1,287 @@
+{
+  "source": "Common Paper (https://commonpaper.com/standards/)",
+  "license": {
+    "name": "CC BY 4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "templates": [
+    {
+      "id": "mutual-nda",
+      "name": "Mutual Non-Disclosure Agreement",
+      "description": "Lets two parties share confidential information while evaluating a business relationship.",
+      "version": "1.0",
+      "files": [
+        "mutual-nda-coverpage.md",
+        "mutual-nda.md"
+      ],
+      "variables": [
+        "Effective Date",
+        "Governing Law",
+        "Jurisdiction",
+        "MNDA Term",
+        "Purpose",
+        "Term of Confidentiality"
+      ],
+      "standard_url": "https://commonpaper.com/standards/mutual-nda/1.0",
+      "source_repo": "https://github.com/CommonPaper/Mutual-NDA"
+    },
+    {
+      "id": "cloud-service-agreement",
+      "name": "Cloud Service Agreement",
+      "description": "Terms for selling and buying cloud software / SaaS products.",
+      "version": "3.0",
+      "files": [
+        "cloud-service-agreement.md"
+      ],
+      "variables": [
+        "Chosen Courts",
+        "Customer",
+        "Customer Covered Claim",
+        "DPA",
+        "Effective Date",
+        "General Cap Amount",
+        "Governing Law",
+        "Non-Renewal Notice Date",
+        "Order Date",
+        "Provider",
+        "Provider Covered Claim",
+        "Subscription Period",
+        "Technical Support"
+      ],
+      "standard_url": "https://commonpaper.com/standards/cloud-service-agreement/3.0",
+      "source_repo": "https://github.com/CommonPaper/CSA"
+    },
+    {
+      "id": "service-level-agreement",
+      "name": "Service Level Agreement",
+      "description": "Uptime and support response-time commitments, with service credits, for a cloud service.",
+      "version": "2.0",
+      "files": [
+        "service-level-agreement.md"
+      ],
+      "variables": [
+        "Customer",
+        "Provider",
+        "Response Time Credit",
+        "Scheduled Downtime",
+        "Subscription Period",
+        "Support Channel",
+        "Target Response Time",
+        "Target Uptime",
+        "Uptime Credit"
+      ],
+      "standard_url": "https://commonpaper.com/standards/service-level-agreement/2.0",
+      "source_repo": "https://github.com/CommonPaper/SLA"
+    },
+    {
+      "id": "data-processing-agreement",
+      "name": "Data Processing Agreement",
+      "description": "Governs a provider's processing of personal data on behalf of a customer (GDPR and related laws).",
+      "version": "1.0",
+      "files": [
+        "data-processing-agreement.md"
+      ],
+      "variables": [
+        "Agreement",
+        "Approved Subprocessors",
+        "Categories of Data Subjects",
+        "Categories of Personal Data",
+        "Customer",
+        "Duration of Processing",
+        "Frequency of Transfer",
+        "Governing Member State",
+        "Nature and Purpose of Processing",
+        "Provider",
+        "Provider Security Contact",
+        "Security Policy",
+        "Special Category Data",
+        "Special Category Data Restrictions or Safeguards"
+      ],
+      "standard_url": "https://commonpaper.com/standards/data-processing-agreement/1.0",
+      "source_repo": "https://github.com/CommonPaper/DPA"
+    },
+    {
+      "id": "design-partner-agreement",
+      "name": "Design Partner Agreement",
+      "description": "Gives an early-stage partner access to a product in exchange for feedback.",
+      "version": "1.0",
+      "files": [
+        "design-partner-agreement.md"
+      ],
+      "variables": [
+        "Chosen Courts",
+        "Effective Date",
+        "Fees",
+        "Governing Law",
+        "Notice Address",
+        "Partner",
+        "Program",
+        "Provider",
+        "Term"
+      ],
+      "standard_url": "https://commonpaper.com/standards/design-partner-agreement/1.0",
+      "source_repo": "https://github.com/CommonPaper/Design-Partner-Agreement"
+    },
+    {
+      "id": "professional-services-agreement",
+      "name": "Professional Services Agreement",
+      "description": "Terms for services and deliverables performed under statements of work.",
+      "version": "1.0",
+      "files": [
+        "professional-services-agreement.md"
+      ],
+      "variables": [
+        "Additional Warranties",
+        "Chosen Courts",
+        "Customer",
+        "Customer Covered Claim",
+        "Customer Obligations",
+        "Customer Policies",
+        "DPA",
+        "Deliverable",
+        "Effective Date",
+        "Fees",
+        "General Cap Amount",
+        "Governing Law",
+        "Increased Cap Amount",
+        "Increased Claims",
+        "Insurance Minimums",
+        "Payment Period",
+        "Provider",
+        "Provider Covered Claim",
+        "Rejection Period",
+        "Resubmission Period",
+        "SOW Term",
+        "Security Policy",
+        "Time of Assignment",
+        "Unlimited Claims"
+      ],
+      "standard_url": "https://commonpaper.com/standards/professional-services-agreement/1.0",
+      "source_repo": "https://github.com/CommonPaper/PSA"
+    },
+    {
+      "id": "partnership-agreement",
+      "name": "Partnership Agreement",
+      "description": "Terms for business partnerships such as referral, reseller, or co-marketing arrangements.",
+      "version": "1.0",
+      "files": [
+        "partnership-agreement.md"
+      ],
+      "variables": [
+        "Additional Warranties",
+        "Brand Guidelines",
+        "Chosen Courts",
+        "Company",
+        "Company Covered Claim",
+        "DPA",
+        "Effective Date",
+        "End Date",
+        "General Cap Amount",
+        "Governing Law",
+        "Increased Cap Amount",
+        "Increased Claims",
+        "Obligations",
+        "Partner",
+        "Partner Covered Claim",
+        "Payment Process",
+        "Payment Schedule",
+        "Territory",
+        "Unlimited Claims"
+      ],
+      "standard_url": "https://commonpaper.com/standards/partnership-agreement/1.0",
+      "source_repo": "https://github.com/CommonPaper/Partnership-Agreement"
+    },
+    {
+      "id": "business-associate-agreement",
+      "name": "Business Associate Agreement",
+      "description": "HIPAA agreement governing a provider's handling of protected health information.",
+      "version": "1.0",
+      "files": [
+        "business-associate-agreement.md"
+      ],
+      "variables": [
+        "Agreement",
+        "BAA Effective Date",
+        "Breach Notification Period",
+        "Company",
+        "Limitations",
+        "Provider"
+      ],
+      "standard_url": "https://commonpaper.com/standards/business-associate-agreement/1.0",
+      "source_repo": "https://github.com/CommonPaper/BAA"
+    },
+    {
+      "id": "software-license-agreement",
+      "name": "Software License Agreement",
+      "description": "Terms for licensing on-premise or downloadable software.",
+      "version": "1.1",
+      "files": [
+        "software-license-agreement.md"
+      ],
+      "variables": [
+        "Additional Warranties",
+        "Chosen Courts",
+        "Customer",
+        "Customer Covered Claim",
+        "Deletion Procedure",
+        "Effective Date",
+        "General Cap Amount",
+        "Governing Law",
+        "Increased Cap Amount",
+        "Increased Claims",
+        "License Limits",
+        "Non-Renewal Notice Date",
+        "Order Date",
+        "Payment Process",
+        "Permitted Uses",
+        "Provider",
+        "Provider Covered Claim",
+        "Subscription Period",
+        "Unlimited Claims",
+        "Warranty Period"
+      ],
+      "standard_url": "https://commonpaper.com/standards/software-license-agreement/1.1",
+      "source_repo": "https://github.com/CommonPaper/Software-License-Agreement"
+    },
+    {
+      "id": "pilot-agreement",
+      "name": "Pilot Agreement",
+      "description": "Short-term trial of a product before a customer commits to a full purchase.",
+      "version": "1.1",
+      "files": [
+        "pilot-agreement.md"
+      ],
+      "variables": [
+        "Chosen Courts",
+        "Customer",
+        "Effective Date",
+        "General Cap Amount",
+        "Governing Law",
+        "Notice Address",
+        "Pilot Period",
+        "Provider"
+      ],
+      "standard_url": "https://commonpaper.com/standards/pilot-agreement/1.1",
+      "source_repo": "https://github.com/CommonPaper/Pilot-Agreement"
+    },
+    {
+      "id": "ai-addendum",
+      "name": "AI Addendum",
+      "description": "Addendum covering AI-specific terms such as model training on customer data.",
+      "version": "1.0",
+      "files": [
+        "ai-addendum.md"
+      ],
+      "variables": [
+        "Customer",
+        "Improvement Restrictions",
+        "Provider",
+        "Training Data",
+        "Training Purposes",
+        "Training Restrictions"
+      ],
+      "standard_url": "https://commonpaper.com/standards/ai-addendum/1.0",
+      "source_repo": "https://github.com/CommonPaper/AI-Addendum"
+    }
+  ]
+}
