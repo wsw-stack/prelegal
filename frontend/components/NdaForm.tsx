@@ -9,8 +9,10 @@ type Props = {
   onChange: (patch: Partial<NdaData>) => void;
 };
 
-const input =
-  "w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30";
+/** Shared input styling, without a width so callers can size it. */
+const inputBase =
+  "rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30";
+const input = `${inputBase} w-full`;
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
@@ -22,9 +24,20 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
   );
 }
 
+/** Like Field, but for a set of radio options, which must not be nested in a <label>. */
+function OptionGroup({ label, hint, children }: { label: string; hint: string; children: ReactNode }) {
+  return (
+    <fieldset className="min-w-0 space-y-1">
+      <legend className="text-sm font-medium text-zinc-800">{label}</legend>
+      <span className="block text-xs text-zinc-500">{hint}</span>
+      <div className="space-y-2 text-sm text-zinc-800">{children}</div>
+    </fieldset>
+  );
+}
+
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <fieldset className="space-y-4 rounded-lg border border-zinc-200 bg-white p-5">
+    <fieldset className="min-w-0 space-y-4 rounded-lg border border-zinc-200 bg-white p-5">
       <legend className="px-1 text-sm font-semibold uppercase tracking-wide text-zinc-500">{title}</legend>
       {children}
     </fieldset>
@@ -80,72 +93,70 @@ export function NdaForm({ data, onChange }: Props) {
           </div>
         </Field>
 
-        <Field label="MNDA term" hint="The length of this MNDA">
-          <div className="space-y-2 text-sm text-zinc-800">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="mndaTerm"
-                checked={data.mndaTerm === "expires"}
-                onChange={() => onChange({ mndaTerm: "expires" })}
-              />
-              Expires
-              <input
-                type="number"
-                min={1}
-                max={99}
-                aria-label="MNDA term in years"
-                className={`${input} w-20`}
-                value={data.mndaTermYears}
-                disabled={data.mndaTerm !== "expires"}
-                onChange={(e) => onChange({ mndaTermYears: toYears(e.target.value) })}
-              />
-              year(s) from the effective date
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="mndaTerm"
-                checked={data.mndaTerm === "until-terminated"}
-                onChange={() => onChange({ mndaTerm: "until-terminated" })}
-              />
-              Continues until terminated
-            </label>
-          </div>
-        </Field>
+        <OptionGroup label="MNDA term" hint="The length of this MNDA">
+          <label className="flex flex-wrap items-center gap-2">
+            <input
+              type="radio"
+              name="mndaTerm"
+              checked={data.mndaTerm === "expires"}
+              onChange={() => onChange({ mndaTerm: "expires" })}
+            />
+            Expires
+            <input
+              type="number"
+              min={1}
+              max={99}
+              aria-label="MNDA term in years"
+              className={`${inputBase} w-20`}
+              value={data.mndaTermYears}
+              disabled={data.mndaTerm !== "expires"}
+              onChange={(e) => onChange({ mndaTermYears: toYears(e.target.value) })}
+            />
+            year(s) from the effective date
+          </label>
+          <label className="flex flex-wrap items-center gap-2">
+            <input
+              type="radio"
+              name="mndaTerm"
+              checked={data.mndaTerm === "until-terminated"}
+              onChange={() => onChange({ mndaTerm: "until-terminated" })}
+            />
+            Continues until terminated
+          </label>
+        </OptionGroup>
 
-        <Field label="Term of confidentiality" hint="How long Confidential Information is protected">
-          <div className="space-y-2 text-sm text-zinc-800">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="confidentialityTerm"
-                checked={data.confidentialityTerm === "years"}
-                onChange={() => onChange({ confidentialityTerm: "years" })}
-              />
-              <input
-                type="number"
-                min={1}
-                max={99}
-                aria-label="Term of confidentiality in years"
-                className={`${input} w-20`}
-                value={data.confidentialityYears}
-                disabled={data.confidentialityTerm !== "years"}
-                onChange={(e) => onChange({ confidentialityYears: toYears(e.target.value) })}
-              />
+        <OptionGroup label="Term of confidentiality" hint="How long Confidential Information is protected">
+          <label className="flex flex-wrap items-center gap-2">
+            <input
+              type="radio"
+              name="confidentialityTerm"
+              checked={data.confidentialityTerm === "years"}
+              onChange={() => onChange({ confidentialityTerm: "years" })}
+            />
+            <input
+              type="number"
+              min={1}
+              max={99}
+              aria-label="Term of confidentiality in years"
+              className={`${inputBase} w-20`}
+              value={data.confidentialityYears}
+              disabled={data.confidentialityTerm !== "years"}
+              onChange={(e) => onChange({ confidentialityYears: toYears(e.target.value) })}
+            />
+            <span className="min-w-48 flex-1">
               year(s) from the effective date (trade secrets stay protected while they remain trade secrets)
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="confidentialityTerm"
-                checked={data.confidentialityTerm === "perpetual"}
-                onChange={() => onChange({ confidentialityTerm: "perpetual" })}
-              />
-              In perpetuity
-            </label>
-          </div>
-        </Field>
+            </span>
+          </label>
+          <label className="flex flex-wrap items-center gap-2">
+            <input
+              type="radio"
+              name="confidentialityTerm"
+              checked={data.confidentialityTerm === "perpetual"}
+              onChange={() => onChange({ confidentialityTerm: "perpetual" })}
+            />
+            In perpetuity
+          </label>
+        </OptionGroup>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Governing law" hint="State whose laws apply">

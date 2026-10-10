@@ -43,7 +43,7 @@ export function NdaBuilder({ clauses }: { clauses: Clause[] }) {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-4 py-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
       <div className="space-y-6">
         <header className="space-y-2">
           <h1 className="text-2xl font-semibold text-zinc-900">Mutual NDA creator</h1>

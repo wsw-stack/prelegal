@@ -80,7 +80,7 @@ export function NdaPreview({ cover, clauses }: { cover: CoverPage; clauses: Clau
         <h2 className="text-center text-xl font-bold">Standard Terms</h2>
         <ol className="space-y-3">
           {clauses.map((clause) => (
-            <li key={clause.number} className="text-justify">
+            <li key={clause.number} className="sm:text-justify">
               {clause.number}. <strong>{clause.title}</strong>.{" "}
               {clause.body.map((run, i) =>
                 run.bold ? (
