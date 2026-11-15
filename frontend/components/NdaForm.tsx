@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from "react";
 
 import type { NdaData, Party } from "@/lib/nda/types";
+import { input, inputBase } from "@/lib/ui";
 
 type Props = {
   data: NdaData;
@@ -10,10 +11,6 @@ type Props = {
   onPartyChange: (index: 0 | 1, patch: Partial<Party>) => void;
 };
 
-/** Shared input styling, without a width so callers can size it. */
-const inputBase =
-  "rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30";
-const input = `${inputBase} w-full`;
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
