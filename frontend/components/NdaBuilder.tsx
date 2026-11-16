@@ -4,23 +4,16 @@ import { useMemo, useState } from "react";
 
 import { buildCoverPage, pdfFilename } from "@/lib/nda/coverPage";
 import type { Clause } from "@/lib/nda/standardTerms";
-import { defaultNdaData, type NdaData, type Party } from "@/lib/nda/types";
+import { defaultNdaData, type NdaData } from "@/lib/nda/types";
 
-import { NdaForm } from "./NdaForm";
+import { ChatPanel } from "./ChatPanel";
 import { NdaPreview } from "./NdaPreview";
 
-/** Form on the left, live document preview on the right, and PDF download. */
+/** AI chat on the left, live document preview on the right, and PDF download. */
 export function NdaBuilder({ clauses }: { clauses: Clause[] }) {
   const [data, setData] = useState<NdaData>(defaultNdaData);
   const [downloading, setDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const updateParty = (index: 0 | 1, patch: Partial<Party>) =>
-    setData((prev) => {
-      const parties: [Party, Party] = [...prev.parties];
-      parties[index] = { ...parties[index], ...patch };
-      return { ...prev, parties };
-    });
 
   const cover = useMemo(() => buildCoverPage(data), [data]);
   const missingCount = useMemo(
@@ -59,14 +52,11 @@ export function NdaBuilder({ clauses }: { clauses: Clause[] }) {
         <header className="space-y-2">
           <h1 className="text-2xl font-semibold text-zinc-900">Mutual NDA creator</h1>
           <p className="text-sm text-zinc-600">
-            Fill in the details below. The agreement on the right updates as you type, and you can download it as a PDF.
+            Chat with the AI assistant to fill in the agreement. The document on the right updates as you go, and you
+            can download it as a PDF.
           </p>
         </header>
-        <NdaForm
-          data={data}
-          onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
-          onPartyChange={updateParty}
-        />
+        <ChatPanel data={data} onFieldsChange={setData} />
       </div>
 
       <div className="space-y-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto">

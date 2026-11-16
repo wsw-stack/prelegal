@@ -27,3 +27,14 @@ def client(db_path: Path, static_dir: Path):
     # Entering the client runs the app's lifespan, which creates the database.
     with TestClient(create_app(db_path=db_path, static_dir=static_dir)) as client:
         yield client
+
+
+@pytest.fixture(autouse=True)
+def no_real_llm(monkeypatch):
+    """Tests never reach OpenRouter: no API key, and a LiteLLM that refuses to run."""
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+
+    def refuse(**kwargs):
+        raise AssertionError("tests must not call the real LLM")
+
+    monkeypatch.setattr("litellm.completion", refuse)
