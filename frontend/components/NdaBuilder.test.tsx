@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Clause } from "@/lib/nda/standardTerms";
+import { defaultNdaData, type NdaData } from "@/lib/nda/types";
 
 import { NdaBuilder } from "./NdaBuilder";
 
@@ -15,85 +16,63 @@ const clauses: Clause[] = [
   { number: 1, title: "Introduction", body: [{ text: "Use for the " }, { text: "Purpose", term: true }, { text: "." }] },
 ];
 
+const party = (company: string) => ({ name: "", title: "", company, noticeAddress: "" });
+
+/** Makes the next chat request answer with `reply` and these fields. */
+function replyWith(reply: string, fields: NdaData) {
+  vi.mocked(fetch).mockResolvedValueOnce(new Response(JSON.stringify({ reply, fields }), { status: 200 }));
+}
+
 function setup() {
   const user = userEvent.setup();
   render(<NdaBuilder clauses={clauses} />);
   const preview = screen.getByRole("article");
-  const party = (n: 1 | 2) => within(screen.getByRole("group", { name: `Party ${n}` }));
-  return { user, preview, party };
+  const say = async (text: string, reply: string) => {
+    await user.type(screen.getByRole("textbox", { name: "Message" }), `${text}{Enter}`);
+    await screen.findByText(reply);
+  };
+  return { user, preview, say };
 }
 
+beforeEach(() => vi.stubGlobal("fetch", vi.fn()));
+afterEach(() => vi.unstubAllGlobals());
+
 describe("NdaBuilder", () => {
-  it("starts with every required field highlighted as missing", () => {
+  it("starts with the chat and every required field highlighted as missing", () => {
     const { preview } = setup();
+    expect(screen.getByRole("region", { name: "Chat with the AI assistant" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Company")).not.toBeInTheDocument();
     expect(screen.getByText("11 fields still empty (highlighted).")).toBeInTheDocument();
     expect(preview).toHaveTextContent("[Effective date]");
     expect(preview).toHaveTextContent("Use for the Purpose.");
   });
 
-  it("updates the preview and missing count as the user types", async () => {
-    const { user, preview, party } = setup();
-    await user.type(party(1).getByLabelText("Company"), "Acme");
+  it("fills in the preview and missing count from the chat", async () => {
+    const { preview, say } = setup();
+    replyWith("Thanks! Who signs for Acme?", {
+      ...defaultNdaData,
+      effectiveDate: "2026-11-15",
+      governingLaw: "Delaware",
+      parties: [party("Acme"), party("Globex")],
+    });
+    await say("Acme and Globex, Delaware law, starting 15 Nov 2026", "Thanks! Who signs for Acme?");
+
     expect(within(preview).getByRole("cell", { name: "Acme" })).toBeInTheDocument();
-    expect(screen.getByText("10 fields still empty (highlighted).")).toBeInTheDocument();
+    expect(within(preview).getByRole("cell", { name: "Globex" })).toBeInTheDocument();
+    expect(preview).toHaveTextContent("November 15, 2026");
+    expect(screen.getByText("7 fields still empty (highlighted).")).toBeInTheDocument();
   });
 
-  it("keeps the two parties independent", async () => {
-    const { user, party } = setup();
-    await user.type(party(2).getByLabelText("Company"), "Globex");
-    expect(party(1).getByLabelText("Company")).toHaveValue("");
-    expect(party(2).getByLabelText("Company")).toHaveValue("Globex");
-  });
+  it("sends the current fields with each message", async () => {
+    const { say } = setup();
+    const afterFirst = { ...defaultNdaData, parties: [party("Acme"), party("Globex")] as NdaData["parties"] };
+    replyWith("Which state's law?", afterFirst);
+    await say("Acme and Globex", "Which state's law?");
+    replyWith("Delaware it is.", { ...afterFirst, governingLaw: "Delaware" });
+    await say("Delaware", "Delaware it is.");
 
-  it("fills in today's date from the Today button", async () => {
-    const { user, preview } = setup();
-    await user.click(screen.getByRole("button", { name: "Today" }));
-    const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-    expect(preview).toHaveTextContent(today);
-  });
-
-  it("switches MNDA term options and disables the unused years input", async () => {
-    const { user, preview } = setup();
-    const years = screen.getByLabelText("MNDA term in years");
-    await user.clear(years);
-    await user.type(years, "3");
-    expect(preview).toHaveTextContent("Expires 3 years from Effective Date.");
-
-    await user.click(screen.getByRole("radio", { name: "Continues until terminated" }));
-    expect(years).toBeDisabled();
-    expect(preview).toHaveTextContent("Continues until terminated in accordance with the terms of the MNDA.");
-  });
-
-  it("lets the user clear a years field and type a new value", async () => {
-    const { user, preview } = setup();
-    const years = screen.getByLabelText("MNDA term in years");
-    await user.clear(years);
-    await user.type(years, "5");
-    expect(years).toHaveValue(5);
-    expect(preview).toHaveTextContent("Expires 5 years from Effective Date.");
-  });
-
-  it("clamps out-of-range years to 1–99", async () => {
-    const { user, preview } = setup();
-    const years = screen.getByLabelText("Term of confidentiality in years");
-    await user.clear(years);
-    await user.type(years, "100");
-    await user.tab();
-    expect(years).toHaveValue(99);
-    expect(preview).toHaveTextContent("99 years from Effective Date");
-
-    await user.clear(years);
-    await user.type(years, "0");
-    await user.tab();
-    expect(years).toHaveValue(1);
-    expect(preview).toHaveTextContent("1 year from Effective Date");
-  });
-
-  it("labels each radio option by its own text", () => {
-    setup();
-    for (const name of ["Expires", "Continues until terminated", "In perpetuity"]) {
-      expect(screen.getByRole("radio", { name: new RegExp(`^${name}`) })).toBeInTheDocument();
-    }
+    const sent = JSON.parse(vi.mocked(fetch).mock.calls[1][1]!.body as string);
+    expect(sent.fields).toEqual(afterFirst);
   });
 
   describe("PDF download", () => {
@@ -115,9 +94,9 @@ describe("NdaBuilder", () => {
 
     it("downloads a PDF named after the companies", async () => {
       toBlob.mockResolvedValue(new Blob(["%PDF-"]));
-      const { user, party } = setup();
-      await user.type(party(1).getByLabelText("Company"), "Acme, Inc.");
-      await user.type(party(2).getByLabelText("Company"), "Globex");
+      const { user, say } = setup();
+      replyWith("Done.", { ...defaultNdaData, parties: [party("Acme, Inc."), party("Globex")] });
+      await say("Acme, Inc. and Globex", "Done.");
 
       await user.click(screen.getByRole("button", { name: "Download PDF" }));
 

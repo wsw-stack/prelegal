@@ -5,6 +5,7 @@ description = "Prelegal API and static frontend server"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.163.1",
+    "litellm>=1.109.1",
     "uvicorn[standard]>=0.54.0",
 ]
 

@@ -2,10 +2,11 @@
 
 from fastapi import APIRouter, HTTPException
 
-from app.api import health
+from app.api import chat, health
 
 router = APIRouter(prefix="/api")
 router.include_router(health.router)
+router.include_router(chat.router)
 
 
 # Registered last: without it, unknown /api paths would fall through to the
